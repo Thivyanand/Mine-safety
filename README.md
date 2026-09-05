@@ -1,90 +1,96 @@
-<<<<<<< HEAD
-# Mine-safety
-=======
-MineGuard Prototype (No Drone)
+# MineGuard — Underground Mine Safety Digital Twin
 
-Short description
------------------
+> **An intelligent digital-twin prototype for real-time underground worker safety, emergency response, and hazard-aware evacuation.**
 
-# Mine-safety
+MineGuard is an early-stage **underground mine safety Digital Twin** designed to provide control-room operators with a live operational view of workers, hazards, emergency events, and evacuation routes.
 
-## MineGuard Digital Twin — Beginning Prototype
+The current prototype focuses on the core safety workflow:
 
-### Overview
-MineGuard is an early-stage underground mine safety digital-twin prototype. It focuses on bringing worker status, emergency events, buddy alerts, and safe evacuation routing into one control-room dashboard.
+**SENSE → UNDERSTAND → UPDATE → IDENTIFY RISK → ROUTE → RESPOND**
 
-This version intentionally keeps the scope small so the core concept can be demonstrated clearly before adding more advanced hardware integrations.
+The system is intentionally implemented without physical hardware or drones at this stage. Worker telemetry and emergency conditions are simulated so that the core decision-making and digital-twin workflow can be demonstrated clearly.
 
-### Current Prototype Features
-- 3D underground mine visualization
-- Worker roster and live worker markers
-- Worker telemetry through the watch simulator
-- Manual SOS and fall detection inputs
-- Emergency simulation for mine hazards
-- Hazard-zone visualization
-- Buddy Trigger System
-- A* based safe evacuation routing
-- Alternative route calculation when a route is blocked
-- Event log and worker detail panel
+---
 
-### Core Workflow
-1. Worker telemetry or a simulated mine emergency is received.
-2. The digital twin updates the affected worker and hazard zone.
-3. The system identifies the actual worker affected by the event.
-4. The Buddy Trigger System alerts nearby reachable workers.
-5. A* calculates a safe route to an exit or refuge while avoiding blocked or hazardous graph nodes.
-6. The control-room dashboard shows the worker status, hazard, buddy alert, and evacuation route.
+## The Problem
 
-### Main Algorithm — A* Search
-The mine tunnel network is represented as a weighted graph. Tunnel points are nodes and valid tunnel connections are edges. A* searches for the shortest currently reachable evacuation route while excluding blocked or hazardous graph nodes.
+Underground mining environments are dynamic and difficult to monitor.
 
-### Buddy Trigger System
-When a worker triggers SOS, a fall is detected, or the worker is affected by an active hazard, the system checks nearby workers using tunnel-graph walking distance. Only reachable workers are considered valid buddies, so the alert does not suggest a path through an active hazard.
+During an emergency:
 
-### Prototype vs Real Deployment
-**Prototype**
-- Worker telemetry is simulated through the included watch page.
-- Emergency conditions are triggered from the dashboard.
-- Worker positions and evacuation routes are shown in the 3D mine model.
+- Worker locations may change continuously.
+- Tunnel sections can become unsafe or inaccessible.
+- Static evacuation plans may become invalid.
+- Control-room operators must combine information from multiple sources.
+- Sending another worker into an uncertain or hazardous area can increase the risk.
+- Emergency response decisions can become slow when information is fragmented.
 
-**Real-world integration path**
-A later deployment could connect the same digital-twin layer to existing mine infrastructure such as gas sensors, vibration sensors, temperature/airflow sensors, UWB or RFID worker-location systems, industrial Wi-Fi or mesh networks, leaky-feeder systems, and Ethernet/fiber backbones.
+MineGuard addresses this by creating a **live digital representation of the underground environment** and using it to support emergency decisions.
 
-## Quick start
+---
 
-- Create a virtual environment and activate it:
+#  What MineGuard Does
 
-```bash
-python -m venv venv
-source venv/bin/activate
-```
+MineGuard brings together:
 
-- Install dependencies:
+-  Worker monitoring
+-  Worker location visualization
+-  SOS and fall events
+-  Hazard-zone visualization
+-  Buddy-based emergency response
+-  Dynamic evacuation routing
+-  Alternative route calculation
+-  Centralized control-room dashboard
+-  Real-time event logging
 
-```bash
-pip install -r requirements.txt
-```
+Instead of simply displaying an emergency, MineGuard attempts to answer:
 
-- Run the app:
+> **"What is the safest action that can be taken right now?"**
 
-```bash
-python app.py
-```
+---
 
-- Open a browser at `http://localhost:5000` (or the address printed by the app).
+# Core Architecture
 
-## Run (alternative)
-```bash
-pip install -r requirements.txt
-python app.py
-```
-
-Open the dashboard at `http://127.0.0.1:5000` and the worker watch simulator at `http://127.0.0.1:5000/watch`.
-
-## License
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
-Notes
------
-
-- If `pywebview` GTK backends are unavailable on Linux, the app should fall back to server-only mode.
+```text
+                    ┌─────────────────────┐
+                    │ Worker / Watch      │
+                    │ Telemetry Simulator │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   MineGuard Backend │
+                    │   Event Processing  │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+              ▼                ▼                ▼
+       Worker State       Hazard State      Event Log
+              │                │                │
+              └────────────────┼────────────────┘
+                               ▼
+                    ┌─────────────────────┐
+                    │   Digital Twin      │
+                    │ Underground Mine    │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   Risk / Routing    │
+                    │      Engine         │
+                    └──────────┬──────────┘
+                               │
+                         A* Safe Route
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ Buddy Trigger       │
+                    │ + Evacuation Logic  │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ Control Room        │
+                    │ Safety Dashboard    │
+                    └─────────────────────┘
